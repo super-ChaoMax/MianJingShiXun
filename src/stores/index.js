@@ -12,3 +12,5 @@ export default pinia
 
 //管理其他仓库
 
+export * from './user'
+

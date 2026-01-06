@@ -10,24 +10,24 @@ const router = createRouter({
     },
 
     {
-      path: '/Login',
+      path: '/login',
       component: () => import('../views/Login/index.vue'),
     },
 
     {
-      path: '/ZhuCe',
+      path: '/zhuce',
       component: () => import('../views/ZhuCe/index.vue'),
     },
 
     {
-      path: '/MJXianQing',
+      path: '/mjxianqing',
       component: () => import('../views/MJXianQing/index.vue'),
     },
 
 
     //首页
     {
-      path: '/ShoYe',
+      path: '/shoye',
       component: () => import('../views/ShouYe/index.vue'),
 
 

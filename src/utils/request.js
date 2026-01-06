@@ -1,35 +1,80 @@
 import axios from "axios";
+// 导入自定义 Loading 函数
+import { showLoading, hideLoading } from './loading.js';
 
-//进行封装防止污染
+
+// 创建 Axios 实例
 const instance = axios.create({
-  baseURL: 'https://some-domain.com/api/',      //基地址
+  baseURL: 'https://interview-api-t.itheima.net',
   timeout: 3000,
-//   headers: {'X-Custom-Header': 'foobar'}     //头部
+  headers: { 'Content-Type': 'application/json' }
 });
 
+// 请求计数：避免并发请求重复显示/关闭 Loading
+let requestCount = 0;
 
-// 添加请求拦截器
-instance.interceptors.request.use(function (config) {
-    // 在发送请求之前做些什么
+// 封装显示 Loading 的逻辑
+const showLoadingHandler = () => {
+  if (requestCount === 0) {
+    showLoading('正在请求...'); // 自定义加载文案
+  }
+  requestCount++;
+};
+
+// 封装关闭 Loading 的逻辑
+const hideLoadingHandler = () => {
+  requestCount--;
+  if (requestCount <= 0) {
+    requestCount = 0;
+    hideLoading();
+  }
+};
+
+// 请求拦截器：发送请求前显示 Loading
+instance.interceptors.request.use(
+  (config) => {
+      showLoadingHandler();
+
+      // ----------------------------- 如果有登录的token值就存储起来 -----------------------------
+      const userstoreJSON = localStorage.getItem('MJSX-userstore'); // 从本地存储取 MJSX-userstore
+      const userstore=JSON.parse(userstoreJSON)
+      // console.log("从本地读取的信息",userstore);
+      if(userstore.token){
+        config.headers.Authorization = `Bearer ${userstore.token}`;
+      }
+
+
+
     return config;
-}, function (error) {
-    // 对请求错误做些什么
+  },
+  (error) => {
+
+    hideLoadingHandler(); // 请求失败也关闭 Loading
+
+
+
+
     return Promise.reject(error);
-});
+  }
+);
 
+// 响应拦截器：请求完成后关闭 Loading
+instance.interceptors.response.use(
+  (response) => {
+    hideLoadingHandler();
 
-
-// 添加响应拦截器
-instance.interceptors.response.use(function (response) {
-    // 2xx 范围内的状态码都会触发该函数。
-    // 对响应数据做点什么
-    return response;
-}, function (error) {
-    // 超出 2xx 范围的状态码都会触发该函数。
-    // 对响应错误做点什么
+    
+    return response.data; // 直接返回响应体
+  },
+  (error) => {
+    hideLoadingHandler(); // 响应失败也关闭 Loading
+    // 错误提示（可替换为你的 Toast 组件）
+    const errMsg = !error.response 
+      ? '网络异常，请检查网络' 
+      : error.response.data?.msg || '请求失败，请稍后重试';
+    console.error(errMsg);
     return Promise.reject(error);
-});
+  }
+);
 
-
-
-export default instance
+export default instance;
