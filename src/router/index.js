@@ -1,22 +1,69 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      redirect: '/ShoYe'   //路由重定向
     },
+
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/Login',
+      component: () => import('../views/Login/index.vue'),
     },
+
+    {
+      path: '/ZhuCe',
+      component: () => import('../views/ZhuCe/index.vue'),
+    },
+
+    {
+      path: '/MJXianQing',
+      component: () => import('../views/MJXianQing/index.vue'),
+    },
+
+
+    //首页
+    {
+      path: '/ShoYe',
+      component: () => import('../views/ShouYe/index.vue'),
+
+
+        //二级路由
+        children:[
+
+          {
+            path:'zhuye',
+            component: ()=> import('@/views/ShouYe/zhuye.vue')
+          },
+
+          {
+            path:'shoucang',
+            component: ()=> import('@/views/ShouYe/shoucang.vue')
+          },
+          
+          {
+            path:'xihuan',
+            component: ()=> import('@/views/ShouYe/xihuan.vue')
+          },
+          
+          
+          {
+            path:'wode',
+            component: ()=> import('@/views/ShouYe/wode.vue')
+          },    
+          
+          
+        ]
+
+        
+    },
+
+
+
+    
   ],
 })
 
