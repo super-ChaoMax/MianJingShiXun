@@ -36,12 +36,22 @@ instance.interceptors.request.use(
       showLoadingHandler();
 
       // ----------------------------- 如果有登录的token值就存储起来 -----------------------------
+
       const userstoreJSON = localStorage.getItem('MJSX-userstore'); // 从本地存储取 MJSX-userstore
-      const userstore=JSON.parse(userstoreJSON)
-      // console.log("从本地读取的信息",userstore);
-      if(userstore.token){
-        config.headers.Authorization = `Bearer ${userstore.token}`;
+      // 关键修复：判断条件写反了！应该是「有值时」才解析，而非「无值时」
+      if (userstoreJSON) { // 只有本地存储有数据时，才执行解析和设置Header
+        try {
+          const userstore = JSON.parse(userstoreJSON);
+          // 额外容错：用可选链判断 token 是否存在，避免 userstore 解析后无 token 报错
+          if (userstore?.token) {
+            config.headers.Authorization = `Bearer ${userstore.token}`;
+          }
+        } catch (error) {
+          console.error('解析用户信息失败：', error);
+        }
       }
+
+
 
 
 
